@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -28,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,6 +104,7 @@ fun CityListScreen(
     // Make a Column UI Element
     // .fillMaxSize(): This column we're creating will fill the whole screen
     var newCityName by remember {mutableStateOf("")} // Cache in New City
+    var deleteCityName by remember {mutableStateOf("")} // Cache in city to be deleted
     // Add functionality to delete city as well
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -131,9 +135,9 @@ fun CityListScreen(
             // Button that Deletes Cities
             Button (
                 onClick = {
-                    if (newCityName in cities) {
-                        onDeleteCity(newCityName)
-                        newCityName = ""
+                    if (deleteCityName in cities) {
+                        onDeleteCity(deleteCityName)
+                        deleteCityName = ""
                     }
                 }
             ) {
@@ -141,25 +145,60 @@ fun CityListScreen(
             }
         }
 
-
-
-        LazyColumn(modifier = modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+        ) {
             // For loop (Lambda) that displays every city
             items(cities) { city ->
-                CityRow(city = city)
+                CityRow(city = city,
+                    deleteCityName = deleteCityName,
+                    // Lambda function: Pass String and assign (returns) it to variable
+                    onCitySelected = { deleteCityName = it }
+                )
             }
         }
     }
 
 }
 
+/*
+Citations:
+   - Selection functionality was based on the answer nglauber gave from
+   stackoverflow.
+   Author: https://stackoverflow.com/users/1094333/nglauber
+   Question: "How to select only one item in a list (LazyColumn)?"
+   https://stackoverflow.com/questions/72531840/how-to-select-only-one-item-in-a-list-lazycolumn
+   Answer:
+   https://stackoverflow.com/a/72537011
+   Date: Jun 7, 2022
+   License: CC BY-SA
+   - Additional help turning that answer into one where I can use to manipulate deleteCityName is
+   provided by Claude (Alongside help with citations)
+        Conversation: "How do I change the value of deleteCityName?"
+        Date: Sept 10, 2026
+        Model: Claude Sonnet 5
+        Link: https://claude.ai/share/15407b24-690f-4baf-9fb5-2bc66f710bb6
+*/
 @Composable
-fun CityRow(city: String) {
+fun CityRow(city: String, deleteCityName: String, onCitySelected: (String) -> Unit) {
     // Show text
     Text(
         text = city, // What words to display
         fontSize = 28.sp, // Set font (.sp is required and has to be imported)
         modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 14.dp)
+            // Add selection functionality to
+            .selectable(
+                selected = deleteCityName == city,
+                onClick = {
+                    onCitySelected(city)
+                }
+            )
+            .background(
+                if (deleteCityName == city) Color.Gray
+                else Color.Transparent
+            )
+            .padding(8.dp)
         // .fillMaxWidth: Make it occupy the whole width of the screen
         // .padding: Add padding in horizontal and vertical
         // Red text => Error in called method/function
