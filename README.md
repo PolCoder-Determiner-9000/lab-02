@@ -12,7 +12,7 @@ List any resources used here, or simply put `N/A` if not applicable.
     - Question: ["How to select only one item in a list (LazyColumn)?"](https://stackoverflow.com/questions/72531840/how-to-select-only-one-item-in-a-list-lazycolumn)
     - Date: Jun 7, 2022
     - License: CC BY-SA
-- Allowing Function
+- Allowing Function to manipulate Delete City Variable
     - Conversation: "How do I change the value of deleteCityName?"
     - Date: Sept 10, 2026
     - Model: Claude Sonnet 5
